@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gestión Docente</title>
+  <style>
+    /* Estilos generales */
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f0f2f5;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: #1a56db; /* Azul moderno */
+      color: white;
+      text-align: center;
+      padding: 40px 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2.5rem;
+    }
+
+    .greeting {
+      font-size: 1.5rem;
+      margin-top: 10px;
+      opacity: 0.9;
+    }
+
+    main {
+      flex: 1;
+      padding: 30px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .card {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: 280px;
+      padding: 20px;
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+    }
+
+    .card i {
+      font-size: 3rem;
+      color: #1a56db;
+      margin-bottom: 15px;
+    }
+
+    .card h3 {
+      margin: 0 0 10px 0;
+      color: #1a56db;
+    }
+
+    .card p {
+      color: #666;
+      font-style: italic;
+    }
+
+    footer {
+      background-color: #1a56db;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      margin-top: auto;
+      font-size: 0.9rem;
+    }
+
+    /* Iconos con Font Awesome */
+    .icon {
+      font-size: 3rem;
+    }
+  </style>
+  <!-- Font Awesome para iconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+
+  <!-- Encabezado -->
+  <header>
+    <h1>Gestión Docente</h1>
+    <p class="greeting" id="saludo">Buenos días</p>
+  </header>
+
+  <!-- Contenido principal - Tarjetas -->
+  <main>
+    <!-- Ejemplo de tarjetas (puedes duplicar y personalizar) -->
+    <div class="card" onclick="window.location.href='#'">
+      <i class="fas fa-chalkboard-teacher icon"></i>
+      <h3>Clases</h3>
+      <p>Próximamente</p>
+    </div>
+
+    <div class="card" onclick="window.location.href='#'">
+      <i class="fas fa-book icon"></i>
+      <h3>Asignaturas</h3>
+      <p>Próximamente</p>
+    </div>
+
+    <div class="card" onclick="window.location.href='#'">
+      <i class="fas fa-calendar-alt icon"></i>
+      <h3>Horarios</h3>
+      <p>Próximamente</p>
+    </div>
+
+    <div class="card" onclick="window.location.href='#'">
+      <i class="fas fa-clipboard-check icon"></i>
+      <h3>Evaluaciones</h3>
+      <p>Próximamente</p>
+    </div>
+
+    <div class="card" onclick="window.location.href='#'">
+      <i class="fas fa-user-tie icon"></i>
+      <h3>Docentes</h3>
+      <p>Próximamente</p>
+    </div>
+
+    <div class="card" onclick="window.location.href='#'">
+      <i class="fas fa-cog icon"></i>
+      <h3>Configuración</h3>
+      <p>Próximamente</p>
+    </div>
+  </main>
+
+  <!-- Pie de página -->
+  <footer>
+    &copy; 2025 Oscar Mejía. Todos los derechos reservados.
+  </footer>
+
+  <!-- Script para saludo dinámico según hora en El Salvador (UTC-6) -->
+  <script>
+    function actualizarSaludo() {
+      // Obtener hora actual en El Salvador (UTC-6)
+      const ahora = new Date();
+      const offsetUTCmenos6 = -6 * 60; // minutos
+      const horaSV = new Date(ahora.getTime() + (ahora.getTimezoneOffset() + offsetUTCmenos6) * 60000);
+      const hora = horaSV.getHours();
+
+      let saludo;
+      if (hora < 12) {
+        saludo = "Buenos días";
+      } else if (hora < 18) {
+        saludo = "Buenas tardes";
+      } else {
+        saludo = "Buenas noches";
+      }
+
+      document.getElementById("saludo").textContent = saludo;
+    }
+
+    // Ejecutar al cargar
+    actualizarSaludo();
+  </script>
+
+</body>
+</html>
