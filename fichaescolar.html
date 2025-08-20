@@ -175,6 +175,41 @@
       background-color: #f0f5ff;
     }
 
+    /* Dropdown de fichas */
+    .ficha-dropdown {
+      margin-top: 10px;
+      padding: 10px;
+      background: #f8f9fa;
+      border-left: 4px solid #1a56db;
+      border-radius: 5px;
+      display: none;
+    }
+
+    .ficha-item {
+      margin: 8px 0;
+      padding: 8px;
+      border-bottom: 1px dashed #ccc;
+      font-size: 0.9rem;
+    }
+
+    .ficha-item:last-child {
+      border-bottom: none;
+    }
+
+    .btn-pdf {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .btn-pdf:hover {
+      background: #218838;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .container {
@@ -203,42 +238,6 @@
         flex-direction: column;
       }
     }
-
-    /* Modal */
-    .modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.6);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    .modal-content {
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 400px;
-      text-align: center;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .pdf-container {
-      margin: 20px 0;
-      padding: 20px;
-      background: white;
-      border: 1px dashed #ccc;
-      border-radius: 8px;
-    }
   </style>
 </head>
 <body>
@@ -255,7 +254,7 @@
 
     <!-- Sección Ficha Escolar -->
     <div id="ficha-section" class="section active">
-      <h2 style="color: #1a56db; margin-bottom: 20px;">Registro de Ficha</h2>
+      <h2 style="color: #1a56db;">Registro de Ficha</h2>
       <div class="form-group">
         <label for="nie">NIE del Estudiante:</label>
         <input type="text" id="nie" placeholder="Ej: 123456789" />
@@ -293,9 +292,6 @@
             <option value="4to">4to</option>
             <option value="5to">5to</option>
             <option value="6to">6to</option>
-            <option value="7mo">7mo</option>
-            <option value="8vo">8vo</option>
-            <option value="9no">9no</option>
           </select>
         </div>
         <div class="form-group">
@@ -305,6 +301,14 @@
         <div class="form-group">
           <label for="responsable">Responsable:</label>
           <input type="text" id="responsable" required />
+        </div>
+        <div class="form-group">
+          <label for="padre">Nombre del Padre:</label>
+          <input type="text" id="padre" required />
+        </div>
+        <div class="form-group">
+          <label for="madre">Nombre de la Madre:</label>
+          <input type="text" id="madre" required />
         </div>
         <div class="actions">
           <button id="finalizar-registro-btn">Finalizar Registro</button>
@@ -355,21 +359,9 @@
 
     <!-- Sección Consolidado -->
     <div id="consolidado-section" class="section">
-      <h2 style="color: #1a56db; margin-bottom: 20px;">Consolidado de Fichas</h2>
+      <h2 style="color: #1a56db;">Consolidado de Fichas</h2>
       <div id="lista-estudiantes">
         <p>Cargando estudiantes...</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Confirmación -->
-  <div id="confirm-modal" class="modal hidden">
-    <div class="modal-content">
-      <h3>Confirmar</h3>
-      <p>¿Quieres registrar al estudiante y crear la ficha?</p>
-      <div class="actions">
-        <button id="confirm-yes">Sí</button>
-        <button id="confirm-no" class="btn-secondary">No</button>
       </div>
     </div>
   </div>
@@ -414,10 +406,6 @@
     const finalizarFichaBtn = document.getElementById("finalizar-ficha-btn");
     const cancelarFichaBtn = document.getElementById("cancelar-ficha-btn");
     const descargarFichaBtn = document.getElementById("descargar-ficha-btn");
-
-    const confirmModal = document.getElementById("confirm-modal");
-    const confirmYesBtn = document.getElementById("confirm-yes");
-    const confirmNoBtn = document.getElementById("confirm-no");
 
     // Variables globales
     let currentStudent = null;
@@ -466,7 +454,6 @@
 
     agregarFichaBtn.addEventListener("click", () => {
       agregarFichaForm.classList.remove("hidden");
-      // Llenar datos no editables
       document.getElementById("fecha").value = new Date().toISOString().split('T')[0];
       document.getElementById("hora").value = new Date().toTimeString().slice(0, 5);
     });
@@ -482,13 +469,25 @@
       const grado = document.getElementById("grado").value;
       const docente = document.getElementById("docente").value;
       const responsable = document.getElementById("responsable").value;
+      const padre = document.getElementById("padre").value;
+      const madre = document.getElementById("madre").value;
 
-      if (!nombre || !grado || !docente || !responsable) {
+      if (!nombre || !grado || !docente || !responsable || !padre || !madre) {
         alert("Por favor complete todos los campos.");
         return;
       }
 
-      const studentData = { nombre, grado, docente, responsable, fichas: 1, nie };
+      const studentData = { 
+        nombre, 
+        grado, 
+        docente, 
+        responsable, 
+        padre, 
+        madre, 
+        fichas: 1, 
+        nie 
+      };
+
       await addDoc(collection(db, "students"), studentData);
 
       const fichaData = {
@@ -564,32 +563,31 @@
 
     function generatePDF(student) {
       const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
+      const doc = new jsPDF({ orientation: 'landscape' }); // Horizontal
 
       doc.setFontSize(16);
       doc.text("FICHA ESCOLAR", 10, 20);
       doc.setFontSize(12);
       doc.text("CENTRO ESCOLAR CANTÓN LOS PRADOS", 10, 30);
 
-      // Datos
       const y = 40;
       doc.text(`Nombre del Estudiante: ${student.nombre}`, 10, y);
       doc.text(`Grado: ${student.grado}`, 100, y);
       doc.text(`NIE: ${student.nie}`, 10, y + 10);
       doc.text(`Número de Fichas Acumuladas: ${student.fichas}`, 10, y + 20);
+      doc.text(`Padre: ${student.padre}`, 10, y + 30);
+      doc.text(`Madre: ${student.madre}`, 10, y + 40);
 
-      // Falta
-      doc.text(`Fecha: ___________________ Hora: ___________________`, 10, y + 35);
-      doc.text(`Tipo de Falta Cometida:`, 10, y + 50);
-      doc.text(`___ Académica ___ Conducta ___ Puntualidad ___ Otra: ________________`, 10, y + 60);
-      doc.text(`Descripción de la Falta:`, 10, y + 75);
-      doc.text(`_______________________________________________________`, 10, y + 85);
-      doc.text(`Acción tomada: _____________________________________________`, 10, y + 100);
+      doc.text(`Fecha: ___________________ Hora: ___________________`, 10, y + 55);
+      doc.text(`Tipo de Falta Cometida:`, 10, y + 70);
+      doc.text(`___ Académica ___ Conducta ___ Puntualidad ___ Otra: ________________`, 10, y + 80);
+      doc.text(`Descripción de la Falta:`, 10, y + 95);
+      doc.text(`_______________________________________________________`, 10, y + 105);
+      doc.text(`Acción tomada: _____________________________________________`, 10, y + 120);
 
-      // Firmas
-      doc.text(`Firma del Estudiante: __________________________`, 10, y + 120);
-      doc.text(`Firma del Responsable: _________________________`, 10, y + 135);
-      doc.text(`Firma del Docente: _____________________________`, 100, y + 135);
+      doc.text(`Firma del Estudiante: __________________________`, 10, y + 135);
+      doc.text(`Firma del Responsable: _________________________`, 10, y + 150);
+      doc.text(`Firma del Docente: _____________________________`, 100, y + 150);
 
       doc.save(`ficha_${student.nombre.replace(/\s+/g, '_')}.pdf`);
     }
@@ -623,7 +621,7 @@
             <span style="float:right;">Fichas: ${estudiante.fichas || 0}</span>
           `;
           card.style.cursor = "pointer";
-          card.onclick = () => showDetalles(estudiante);
+          card.onclick = () => toggleFichas(estudiante);
           estudiantesDiv.appendChild(card);
         });
       } catch (error) {
@@ -631,67 +629,42 @@
       }
     }
 
-    function showDetalles(estudiante) {
-      const modal = document.createElement("div");
-      modal.className = "modal";
-      modal.style.display = "flex";
+    function toggleFichas(estudiante) {
+      const card = event.target.closest(".card");
+      const dropdown = card.querySelector(".ficha-dropdown");
+      if (dropdown) {
+        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+      } else {
+        const fichasBody = document.createElement("div");
+        fichasBody.className = "ficha-dropdown";
+        fichasBody.style.display = "block";
+        card.appendChild(fichasBody);
 
-      const content = document.createElement("div");
-      content.className = "modal-content";
-      content.style.width = "90%";
-      content.style.maxWidth = "600px";
-      content.style.maxHeight = "80vh";
-      content.style.overflowY = "auto";
-
-      content.innerHTML = `
-        <h3>Fichas de ${estudiante.nombre}</h3>
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Fecha</th>
-              <th>Tipo</th>
-              <th>Acción</th>
-              <th>PDF</th>
-            </tr>
-          </thead>
-          <tbody id="fichas-body"></tbody>
-        </table>
-        <button onclick="this.parentElement.parentElement.remove()" style="margin-top:15px;">Cerrar</button>
-      `;
-
-      modal.appendChild(content);
-      document.body.appendChild(modal);
-
-      // Cargar fichas
-      getDocs(collection(db, "fichas").where("nie", "==", estudiante.id))
-        .then(snapshot => {
-          const tbody = content.querySelector("#fichas-body");
-          if (snapshot.empty) {
-            tbody.innerHTML = "<tr><td colspan='4'>No hay fichas registradas.</td></tr>";
-          } else {
-            snapshot.forEach(doc => {
-              const f = doc.data();
-              const tr = document.createElement("tr");
-              tr.innerHTML = `
-                <td>${f.fecha}</td>
-                <td>${f.tipoFalta}</td>
-                <td>${f.accion}</td>
-                <td>
-                  <button onclick="generatePDFFromConsolidado(${JSON.stringify({...f, nombre: estudiante.nombre, fichas: estudiante.fichas}).replace(/"/g, '&quot;')})">
-                    <i class="fas fa-download"></i>
-                  </button>
-                </td>
-              `;
-              tbody.appendChild(tr);
-            });
-          }
-        });
+        getDocs(collection(db, "fichas").where("nie", "==", estudiante.id))
+          .then(snapshot => {
+            if (snapshot.empty) {
+              fichasBody.innerHTML = "<p>No hay fichas registradas.</p>";
+            } else {
+              snapshot.forEach(doc => {
+                const f = doc.data();
+                const item = document.createElement("div");
+                item.className = "ficha-item";
+                item.innerHTML = `
+                  <strong>Fecha:</strong> ${f.fecha} <strong>Hora:</strong> ${f.hora}<br>
+                  <strong>Tipo:</strong> ${f.tipoFalta}<br>
+                  <strong>Acción:</strong> ${f.accion}<br>
+                  <button class="btn-pdf" onclick="generatePDFFromConsolidado(${JSON.stringify({...f, nombre: estudiante.nombre, fichas: estudiante.fichas}).replace(/"/g, '&quot;')})">PDF</button>
+                `;
+                fichasBody.appendChild(item);
+              });
+            }
+          });
+      }
     }
 
-    // Función global para PDF desde consolidado
     window.generatePDFFromConsolidado = function(fichaData) {
       const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
+      const doc = new jsPDF({ orientation: 'landscape' });
 
       doc.setFontSize(16);
       doc.text("FICHA ESCOLAR", 10, 20);
