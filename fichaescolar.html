@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ficha Escolar</title>
+  <title>Ficha Escolar | Centro Escolar Cantón Los Prados</title>
   <!-- Font Awesome para iconos -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
@@ -52,7 +52,7 @@
       font-weight: bold;
       transition: background-color 0.3s;
       flex: 1;
-      min-width: 150px;
+      min-width: 140px;
     }
 
     .tab-btn.active {
@@ -67,11 +67,11 @@
       background: white;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      animation: fadeIn 0.4s ease-in-out;
     }
 
     .section.active {
       display: block;
+      animation: fadeIn 0.4s ease-in-out;
     }
 
     @keyframes fadeIn {
@@ -165,16 +165,21 @@
     }
 
     .ficha-item {
-      padding: 10px;
-      margin: 5px 0;
+      padding: 12px;
+      margin: 6px 0;
       background: white;
       border: 1px solid #ddd;
-      border-radius: 4px;
+      border-radius: 6px;
       font-size: 0.95rem;
     }
 
     .ficha-item p {
       margin: 4px 0;
+    }
+
+    /* Clases para ocultar/mostrar */
+    .hidden {
+      display: none !important;
     }
 
     /* Responsive */
@@ -198,6 +203,11 @@
 
       button {
         width: 100%;
+        text-align: center;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
       }
     }
   </style>
@@ -205,7 +215,7 @@
 <body>
 
   <div class="container">
-    <h1>Ficha Escolar | Centro Escolar Cantón Los Prados</h1>
+    <h1>Ficha Escolar</h1>
 
     <!-- Pestañas -->
     <div class="tabs">
@@ -222,6 +232,11 @@
       <button id="verificar-btn"><i class="fas fa-search"></i> Verificar</button>
 
       <div id="resultado-verificacion"></div>
+
+      <!-- Botón Crear Estudiante -->
+      <div id="btn-crear-estudiante" class="hidden">
+        <button id="crear-estudiante-btn">Crear estudiante</button>
+      </div>
 
       <!-- Formulario Crear Estudiante -->
       <div id="crear-estudiante-form" class="hidden">
@@ -263,6 +278,57 @@
         <div class="actions">
           <button id="guardar-estudiante-btn">Guardar</button>
           <button id="cancelar-estudiante-btn" class="btn-secondary">Cancelar</button>
+        </div>
+      </div>
+
+      <!-- Botones si existe -->
+      <div id="opciones-existente" class="hidden">
+        <p><strong>¿Qué deseas hacer?</strong></p>
+        <div class="actions">
+          <button id="btn-ficha-existente">Ficha Escolar</button>
+          <button id="btn-editar-estudiante" class="btn-secondary">Editar</button>
+        </div>
+      </div>
+
+      <!-- Formulario Editar Estudiante -->
+      <div id="editar-estudiante-form" class="hidden">
+        <h3 style="color: #1a56db; margin-top: 20px;">Editar Información</h3>
+        <div class="form-group">
+          <label for="editar-centro">Centro Escolar:</label>
+          <input type="text" id="editar-centro" required />
+        </div>
+        <div class="form-group">
+          <label for="editar-nombre">Nombre del Estudiante:</label>
+          <input type="text" id="editar-nombre" required />
+        </div>
+        <div class="form-group">
+          <label for="editar-grado">Grado:</label>
+          <select id="editar-grado" required>
+            <option value="Parvularia 4">Parvularia 4</option>
+            <option value="Parvularia 5">Parvularia 5</option>
+            <option value="Parvularia 6">Parvularia 6</option>
+            <option value="1ro">1ro</option>
+            <option value="2do">2do</option>
+            <option value="3ro">3ro</option>
+            <option value="4to">4to</option>
+            <option value="5to">5to</option>
+            <option value="6to">6to</option>
+            <option value="7mo">7mo</option>
+            <option value="8vo">8vo</option>
+            <option value="9no">9no</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="editar-responsable">Responsable:</label>
+          <input type="text" id="editar-responsable" required />
+        </div>
+        <div class="form-group">
+          <label for="editar-docente">Docente:</label>
+          <input type="text" id="editar-docente" required />
+        </div>
+        <div class="actions">
+          <button id="guardar-edicion-btn">Guardar</button>
+          <button id="cancelar-edicion-btn" class="btn-secondary">Cancelar</button>
         </div>
       </div>
 
@@ -372,12 +438,20 @@
     const verificarBtn = document.getElementById("verificar-btn");
     const resultadoDiv = document.getElementById("resultado-verificacion");
 
+    const btnCrearEstudiante = document.getElementById("btn-crear-estudiante");
     const crearEstudianteForm = document.getElementById("crear-estudiante-form");
+    const editarEstudianteForm = document.getElementById("editar-estudiante-form");
     const fichaForm = document.getElementById("ficha-form");
     const botonesFinales = document.getElementById("botones-finales");
+    const opcionesExistente = document.getElementById("opciones-existente");
 
+    const crearEstudianteBtn = document.getElementById("crear-estudiante-btn");
     const guardarEstudianteBtn = document.getElementById("guardar-estudiante-btn");
     const cancelarEstudianteBtn = document.getElementById("cancelar-estudiante-btn");
+    const btnFichaExistente = document.getElementById("btn-ficha-existente");
+    const btnEditarEstudiante = document.getElementById("btn-editar-estudiante");
+    const guardarEdicionBtn = document.getElementById("guardar-edicion-btn");
+    const cancelarEdicionBtn = document.getElementById("cancelar-edicion-btn");
     const finalizarFichaBtn = document.getElementById("finalizar-ficha-btn");
     const cancelarFichaBtn = document.getElementById("cancelar-ficha-btn");
     const descargarPdfBtn = document.getElementById("descargar-pdf-btn");
@@ -407,64 +481,37 @@
       const nie = nieInput.value.trim();
       if (!nie) return alert("Por favor ingrese un NIE.");
 
+      // Resetear todo
+      resetAllForms();
       resultadoDiv.innerHTML = "";
-      crearEstudianteForm.classList.add("hidden");
-      fichaForm.classList.add("hidden");
-      botonesFinales.classList.add("hidden");
 
       const studentRef = doc(db, "students", nie);
       const studentSnap = await getDoc(studentRef);
 
       if (studentSnap.exists()) {
         currentStudent = { ...studentSnap.data(), id: nie };
-        mostrarOpcionesExistentes(nie);
+        opcionesExistente.classList.remove("hidden");
       } else {
+        btnCrearEstudiante.classList.remove("hidden");
         resultadoDiv.innerHTML = '<div class="alert">No existe un estudiante registrado con ese NIE.</div>';
-        crearEstudianteForm.classList.remove("hidden");
       }
     });
 
-    // Mostrar opciones si existe
-    function mostrarOpcionesExistentes(nie) {
-      resultadoDiv.innerHTML = `
-        <p><strong>¿Qué deseas hacer?</strong></p>
-        <div class="actions">
-          <button id="btn-ficha-existente">Ficha Escolar</button>
-          <button id="btn-editar-estudiante" class="btn-secondary">Editar</button>
-        </div>
-      `;
-      document.getElementById("btn-ficha-existente").addEventListener("click", () => abrirFichaForm());
-      document.getElementById("btn-editar-estudiante").addEventListener("click", () => editarEstudiante());
+    // Resetear todos los formularios
+    function resetAllForms() {
+      btnCrearEstudiante.classList.add("hidden");
+      opcionesExistente.classList.add("hidden");
+      crearEstudianteForm.classList.add("hidden");
+      editarEstudianteForm.classList.add("hidden");
+      fichaForm.classList.add("hidden");
+      botonesFinales.classList.add("hidden");
     }
 
-    // Abrir formulario de ficha
-    function abrirFichaForm() {
-      const data = currentStudent;
-      document.getElementById("ficha-centro").value = data.centroEscolar || "";
-      document.getElementById("ficha-nombre").value = data.nombre;
-      document.getElementById("ficha-nie").value = data.nie;
-      document.getElementById("ficha-grado").value = data.grado;
-      document.getElementById("ficha-responsable").value = data.responsable;
-      document.getElementById("ficha-docente").value = data.docente;
-
-      document.getElementById("ficha-fecha").value = new Date().toISOString().split('T')[0];
-      document.getElementById("ficha-hora").value = new Date().toTimeString().slice(0, 5);
-
-      fichaForm.classList.remove("hidden");
-    }
-
-    // Editar estudiante
-    function editarEstudiante() {
-      const data = currentStudent;
-      document.getElementById("centro-escolar").value = data.centroEscolar || "";
-      document.getElementById("nombre-estudiante").value = data.nombre;
-      document.getElementById("grado").value = data.grado;
-      document.getElementById("responsable").value = data.responsable;
-      document.getElementById("docente").value = data.docente;
-
+    // Botón Crear Estudiante
+    crearEstudianteBtn.addEventListener("click", () => {
       crearEstudianteForm.classList.remove("hidden");
-      resultadoDiv.innerHTML = '<p><strong>Editando información del estudiante.</strong></p>';
-    }
+      btnCrearEstudiante.classList.add("hidden");
+    });
 
     // Guardar nuevo estudiante
     guardarEstudianteBtn.addEventListener("click", async () => {
@@ -497,10 +544,75 @@
       abrirFichaForm();
     });
 
-    // Cancelar creación
     cancelarEstudianteBtn.addEventListener("click", () => {
       crearEstudianteForm.classList.add("hidden");
-      resultadoDiv.innerHTML = "";
+      btnCrearEstudiante.classList.remove("hidden");
+    });
+
+    // Abrir ficha existente
+    btnFichaExistente.addEventListener("click", () => {
+      abrirFichaForm();
+    });
+
+    function abrirFichaForm() {
+      const data = currentStudent;
+      document.getElementById("ficha-centro").value = data.centroEscolar || "";
+      document.getElementById("ficha-nombre").value = data.nombre;
+      document.getElementById("ficha-nie").value = data.nie;
+      document.getElementById("ficha-grado").value = data.grado;
+      document.getElementById("ficha-responsable").value = data.responsable;
+      document.getElementById("ficha-docente").value = data.docente;
+
+      document.getElementById("ficha-fecha").value = new Date().toISOString().split('T')[0];
+      document.getElementById("ficha-hora").value = new Date().toTimeString().slice(0, 5);
+
+      fichaForm.classList.remove("hidden");
+      opcionesExistente.classList.add("hidden");
+    }
+
+    // Editar estudiante
+    btnEditarEstudiante.addEventListener("click", () => {
+      const data = currentStudent;
+      document.getElementById("editar-centro").value = data.centroEscolar || "";
+      document.getElementById("editar-nombre").value = data.nombre;
+      document.getElementById("editar-grado").value = data.grado;
+      document.getElementById("editar-responsable").value = data.responsable;
+      document.getElementById("editar-docente").value = data.docente;
+
+      editarEstudianteForm.classList.remove("hidden");
+      opcionesExistente.classList.add("hidden");
+    });
+
+    cancelarEdicionBtn.addEventListener("click", () => {
+      editarEstudianteForm.classList.add("hidden");
+      opcionesExistente.classList.remove("hidden");
+    });
+
+    guardarEdicionBtn.addEventListener("click", async () => {
+      const nie = nieInput.value.trim();
+      const centro = document.getElementById("editar-centro").value;
+      const nombre = document.getElementById("editar-nombre").value;
+      const grado = document.getElementById("editar-grado").value;
+      const responsable = document.getElementById("editar-responsable").value;
+      const docente = document.getElementById("editar-docente").value;
+
+      if (!nombre || !grado || !responsable || !docente) {
+        alert("Por favor complete todos los campos.");
+        return;
+      }
+
+      await updateDoc(doc(db, "students", nie), {
+        centroEscolar: centro,
+        nombre,
+        grado,
+        responsable,
+        docente
+      });
+
+      currentStudent = { ...currentStudent, centroEscolar: centro, nombre, grado, responsable, docente };
+      editarEstudianteForm.classList.add("hidden");
+      opcionesExistente.classList.remove("hidden");
+      alert("Información actualizada.");
     });
 
     // Finalizar ficha
@@ -611,7 +723,7 @@
           card.className = "card";
           card.innerHTML = `<strong>${est.nombre}</strong> - Fichas: ${est.fichas || 0}`;
           card.style.cursor = "pointer";
-          card.onclick = () => toggleFichas(est.id);
+          card.onclick = () => toggleFichas(est.id, est);
           div.appendChild(card);
         });
       } catch (error) {
@@ -620,7 +732,7 @@
     }
 
     // Toggle fichas
-    async function toggleFichas(nie) {
+    async function toggleFichas(nie, estudiante) {
       const card = event.target.closest(".card");
       const dropdown = card.querySelector(".ficha-dropdown");
       if (dropdown) {
@@ -639,8 +751,14 @@
           return;
         }
 
+        const fichas = [];
         querySnapshot.forEach(doc => {
-          const f = doc.data();
+          fichas.push({ id: doc.id, ...doc.data() });
+        });
+
+        fichas.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        fichas.forEach(f => {
           const item = document.createElement("div");
           item.className = "ficha-item";
           item.innerHTML = `
@@ -649,8 +767,8 @@
             <p><strong>Descripción:</strong> ${f.descripcion}</p>
             <p><strong>Acción:</strong> ${f.accion}</p>
             <div class="actions">
-              <button class="btn-pdf" onclick="generatePDFFromConsolidado(${JSON.stringify(f).replace(/"/g, '&quot;')})">Descargar PDF</button>
-              <button class="btn-danger" onclick="eliminarFicha('${doc.id}')">Eliminar</button>
+              <button class="btn-pdf" onclick="generatePDFFromConsolidado(${JSON.stringify({...f, ...estudiante}).replace(/"/g, '&quot;')})">Descargar PDF</button>
+              <button class="btn-danger" onclick="eliminarFicha('${f.id}')">Eliminar</button>
             </div>
           `;
           container.appendChild(item);
@@ -674,7 +792,7 @@
         accion: fichaData.accion,
         responsable: fichaData.responsable,
         docente: fichaData.docente,
-        fichas: 1 // Temporal
+        fichas: 1
       });
     };
 
