@@ -242,10 +242,6 @@
       <div id="crear-estudiante-form" class="hidden">
         <h3 style="color: #1a56db; margin-top: 20px;">Registrar Nuevo Estudiante</h3>
         <div class="form-group">
-          <label for="centro-escolar">Nombre del Centro Escolar:</label>
-          <input type="text" id="centro-escolar" required />
-        </div>
-        <div class="form-group">
           <label for="nombre-estudiante">Nombre del Estudiante:</label>
           <input type="text" id="nombre-estudiante" required />
         </div>
@@ -294,10 +290,6 @@
       <div id="editar-estudiante-form" class="hidden">
         <h3 style="color: #1a56db; margin-top: 20px;">Editar Información</h3>
         <div class="form-group">
-          <label for="editar-centro">Centro Escolar:</label>
-          <input type="text" id="editar-centro" required />
-        </div>
-        <div class="form-group">
           <label for="editar-nombre">Nombre del Estudiante:</label>
           <input type="text" id="editar-nombre" required />
         </div>
@@ -335,10 +327,6 @@
       <!-- Formulario Ficha Escolar -->
       <div id="ficha-form" class="hidden">
         <h3 style="color: #1a56db; margin-top: 20px;">Registrar Ficha Escolar</h3>
-        <div class="form-group">
-          <label for="ficha-centro">Centro Escolar:</label>
-          <input type="text" id="ficha-centro" readonly />
-        </div>
         <div class="form-group">
           <label for="ficha-nombre">Nombre del Estudiante:</label>
           <input type="text" id="ficha-nombre" readonly />
@@ -516,7 +504,6 @@
     // Guardar nuevo estudiante
     guardarEstudianteBtn.addEventListener("click", async () => {
       const nie = nieInput.value.trim();
-      const centro = document.getElementById("centro-escolar").value;
       const nombre = document.getElementById("nombre-estudiante").value;
       const grado = document.getElementById("grado").value;
       const responsable = document.getElementById("responsable").value;
@@ -528,7 +515,6 @@
       }
 
       const studentData = {
-        centroEscolar: centro,
         nombre,
         grado,
         responsable,
@@ -556,7 +542,6 @@
 
     function abrirFichaForm() {
       const data = currentStudent;
-      document.getElementById("ficha-centro").value = data.centroEscolar || "";
       document.getElementById("ficha-nombre").value = data.nombre;
       document.getElementById("ficha-nie").value = data.nie;
       document.getElementById("ficha-grado").value = data.grado;
@@ -573,7 +558,6 @@
     // Editar estudiante
     btnEditarEstudiante.addEventListener("click", () => {
       const data = currentStudent;
-      document.getElementById("editar-centro").value = data.centroEscolar || "";
       document.getElementById("editar-nombre").value = data.nombre;
       document.getElementById("editar-grado").value = data.grado;
       document.getElementById("editar-responsable").value = data.responsable;
@@ -590,7 +574,6 @@
 
     guardarEdicionBtn.addEventListener("click", async () => {
       const nie = nieInput.value.trim();
-      const centro = document.getElementById("editar-centro").value;
       const nombre = document.getElementById("editar-nombre").value;
       const grado = document.getElementById("editar-grado").value;
       const responsable = document.getElementById("editar-responsable").value;
@@ -602,14 +585,13 @@
       }
 
       await updateDoc(doc(db, "students", nie), {
-        centroEscolar: centro,
         nombre,
         grado,
         responsable,
         docente
       });
 
-      currentStudent = { ...currentStudent, centroEscolar: centro, nombre, grado, responsable, docente };
+      currentStudent = { ...currentStudent, nombre, grado, responsable, docente };
       editarEstudianteForm.classList.add("hidden");
       opcionesExistente.classList.remove("hidden");
       alert("Información actualizada.");
@@ -619,7 +601,6 @@
     finalizarFichaBtn.addEventListener("click", async () => {
       const nie = document.getElementById("ficha-nie").value;
       const data = {
-        centroEscolar: document.getElementById("ficha-centro").value,
         nombre: document.getElementById("ficha-nombre").value,
         nie,
         grado: document.getElementById("ficha-grado").value,
@@ -650,7 +631,6 @@
     // Descargar PDF
     descargarPdfBtn.addEventListener("click", () => {
       generatePDF({
-        centro: document.getElementById("ficha-centro").value,
         nombre: document.getElementById("ficha-nombre").value,
         nie: document.getElementById("ficha-nie").value,
         grado: document.getElementById("ficha-grado").value,
@@ -670,30 +650,77 @@
       location.reload();
     });
 
-    // Generar PDF (horizontal)
+    // Generar PDF (vertical, con formato mejorado)
     function generatePDF(data) {
       const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-      doc.setFontSize(16);
-      doc.text("FICHA ESCOLAR", 10, 20);
+      // Títulos centrados y en negrita
+      doc.setFontSize(18);
+      doc.setFont("helvetica", "bold");
+      doc.text("FICHA ESCOLAR", 105, 20, { align: "center" });
+
+      doc.setFontSize(14);
+      doc.text("CENTRO ESCOLAR CANTÓN LOS PRADOS", 105, 30, { align: "center" });
+
+      // Resetear a normal
+      doc.setFont("helvetica", "normal");
       doc.setFontSize(12);
-      doc.text("CENTRO ESCOLAR CANTÓN LOS PRADOS", 10, 30);
 
-      const y = 40;
-      doc.text(`Nombre del Estudiante: ${data.nombre}`, 10, y);
-      doc.text(`Centro Escolar: ${data.centro}`, 100, y);
-      doc.text(`NIE: ${data.nie}`, 10, y + 10);
-      doc.text(`Grado: ${data.grado}`, 100, y + 10);
-      doc.text(`Fecha: ${data.fecha} Hora: ${data.hora}`, 10, y + 20);
-      doc.text(`Tipo de Falta: ${data.tipo}`, 10, y + 30);
-      doc.text(`Descripción: ${data.descripcion}`, 10, y + 40);
-      doc.text(`Acción tomada: ${data.accion}`, 10, y + 50);
-      doc.text(`Fichas acumuladas: ${data.fichas}`, 10, y + 60);
+      let y = 50;
 
-      doc.text("Firma del Estudiante: _______________________", 10, y + 80);
-      doc.text("Firma del Responsable: ______________________", 10, y + 95);
-      doc.text("Firma del Docente: __________________________", 100, y + 95);
+      // Nombre del estudiante en su propia línea
+      doc.text(`Nombre del Estudiante:`, 10, y);
+      doc.setFont("helvetica", "bold");
+      doc.text(`${data.nombre}`, 70, y);
+      doc.setFont("helvetica", "normal");
+      y += 10;
+
+      // Resto de datos
+      doc.text(`NIE: ${data.nie}`, 10, y);
+      y += 10;
+      doc.text(`Grado: ${data.grado}`, 10, y);
+      y += 10;
+
+      // Fecha en formato DD/MM/YYYY
+      const [year, month, day] = data.fecha.split("-");
+      const fechaFormateada = `${day}/${month}/${year}`;
+      doc.text(`Fecha: ${fechaFormateada} Hora: ${data.hora}`, 10, y);
+      y += 10;
+
+      doc.text(`Tipo de Falta: ${data.tipo}`, 10, y);
+      y += 10;
+      doc.text(`Descripción de la Falta:`, 10, y);
+      y += 10;
+      doc.text(`${data.descripcion}`, 10, y);
+      y += 10;
+      doc.text(`Acción tomada: ${data.accion}`, 10, y);
+      y += 15;
+
+      // Fichas acumuladas
+      doc.text(`Número de Fichas Acumuladas: ${data.fichas}`, 10, y);
+      y += 20;
+
+      // Firmas
+      doc.text(`Nombre y firma del Encargado: ${data.responsable}`, 10, y);
+      y += 10;
+      doc.line(10, y, 100, y); // Línea para firma
+      y += 15;
+
+      doc.text(`Nombre y firma del Docente: ${data.docente}`, 10, y);
+      y += 10;
+      doc.line(10, y, 100, y);
+      y += 15;
+
+      doc.text(`Nombre y firma del Estudiante: ${data.nombre}`, 10, y);
+      y += 10;
+      doc.line(10, y, 100, y);
+      y += 15;
+
+      // Sello
+      doc.text("Sello", 10, y);
+      y += 10;
+      doc.line(10, y, 50, y);
 
       doc.save(`ficha_${data.nombre.replace(/\s+/g, '_')}_${data.fecha}.pdf`);
     }
@@ -781,7 +808,6 @@
     // Funciones globales
     window.generatePDFFromConsolidado = function(fichaData) {
       generatePDF({
-        centro: fichaData.centroEscolar || "No especificado",
         nombre: fichaData.nombre,
         nie: fichaData.nie,
         grado: fichaData.grado,
@@ -792,7 +818,7 @@
         accion: fichaData.accion,
         responsable: fichaData.responsable,
         docente: fichaData.docente,
-        fichas: 1
+        fichas: fichaData.fichas || 1
       });
     };
 
