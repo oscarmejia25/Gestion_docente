@@ -401,7 +401,19 @@
   <script type="module">
     // Importar Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-    import { getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      getDoc,
+      getDocs,
+      setDoc,
+      addDoc,
+      updateDoc,
+      deleteDoc,
+      query,    // ✅ Importado
+      where     // ✅ Importado
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBbSKiGM7QDIRFuGJlE1vQr-CLRUr4jj1g",
@@ -641,7 +653,7 @@
         accion: document.getElementById("ficha-accion").value,
         responsable: document.getElementById("ficha-responsable").value,
         docente: document.getElementById("ficha-docente").value,
-        fichas: currentStudent.fichas + 1
+        fichas: currentStudent.fichas
       });
     });
 
@@ -772,7 +784,10 @@
       card.appendChild(container);
 
       try {
-        const querySnapshot = await getDocs(collection(db, "fichas").where("nie", "==", nie));
+        // ✅ Corregido: Uso correcto de query() y where()
+        const q = query(collection(db, "fichas"), where("nie", "==", nie));
+        const querySnapshot = await getDocs(q);
+
         if (querySnapshot.empty) {
           container.innerHTML = "<p>No tiene fichas registradas.</p>";
           return;
