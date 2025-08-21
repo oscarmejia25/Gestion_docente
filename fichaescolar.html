@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ficha Escolar | Centro Escolar Cantón Los Prados</title>
+  <title>Ficha Escolar</title>
+  <!-- Font Awesome para iconos -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
     * {
@@ -30,13 +31,6 @@
       color: #1a56db;
       font-size: 1.8rem;
       margin-bottom: 10px;
-    }
-
-    p.subtitle {
-      text-align: center;
-      color: #666;
-      margin-bottom: 30px;
-      font-style: italic;
     }
 
     /* Pestañas */
@@ -109,17 +103,8 @@
       font-size: 1rem;
     }
 
-    .radio-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 8px;
-    }
-
-    .radio-group label {
-      font-weight: normal;
-      display: flex;
-      align-items: center;
+    textarea {
+      resize: vertical;
     }
 
     /* Botones */
@@ -145,6 +130,14 @@
       background-color: #545b62;
     }
 
+    button.btn-danger {
+      background-color: #dc3545;
+    }
+
+    button.btn-danger:hover {
+      background-color: #c82333;
+    }
+
     .actions {
       display: flex;
       gap: 12px;
@@ -152,62 +145,36 @@
       flex-wrap: wrap;
     }
 
-    /* Tabla en consolidado */
-    .table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 15px;
-    }
-
-    .table th, .table td {
+    /* Mensajes */
+    .alert {
       padding: 12px;
-      border-bottom: 1px solid #ddd;
-      text-align: left;
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+      border-radius: 6px;
+      margin: 15px 0;
     }
 
-    .table th {
-      background-color: #1a56db;
-      color: white;
-      font-weight: bold;
-    }
-
-    .table tr:hover {
-      background-color: #f0f5ff;
-    }
-
-    /* Dropdown de fichas */
+    /* Lista de fichas desplegable */
     .ficha-dropdown {
       margin-top: 10px;
       padding: 10px;
       background: #f8f9fa;
       border-left: 4px solid #1a56db;
       border-radius: 5px;
-      display: none;
     }
 
     .ficha-item {
-      margin: 8px 0;
-      padding: 8px;
-      border-bottom: 1px dashed #ccc;
-      font-size: 0.9rem;
-    }
-
-    .ficha-item:last-child {
-      border-bottom: none;
-    }
-
-    .btn-pdf {
-      background: #28a745;
-      color: white;
-      border: none;
-      padding: 5px 10px;
+      padding: 10px;
+      margin: 5px 0;
+      background: white;
+      border: 1px solid #ddd;
       border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.8rem;
+      font-size: 0.95rem;
     }
 
-    .btn-pdf:hover {
-      background: #218838;
+    .ficha-item p {
+      margin: 4px 0;
     }
 
     /* Responsive */
@@ -231,11 +198,6 @@
 
       button {
         width: 100%;
-        text-align: center;
-      }
-
-      .radio-group {
-        flex-direction: column;
       }
     }
   </style>
@@ -243,8 +205,7 @@
 <body>
 
   <div class="container">
-    <h1>Ficha Escolar</h1>
-    <p class="subtitle">Centro Escolar Cantón Los Prados</p>
+    <h1>Ficha Escolar | Centro Escolar Cantón Los Prados</h1>
 
     <!-- Pestañas -->
     <div class="tabs">
@@ -254,122 +215,139 @@
 
     <!-- Sección Ficha Escolar -->
     <div id="ficha-section" class="section active">
-      <h2 style="color: #1a56db;">Registro de Ficha</h2>
       <div class="form-group">
         <label for="nie">NIE del Estudiante:</label>
         <input type="text" id="nie" placeholder="Ej: 123456789" />
       </div>
       <button id="verificar-btn"><i class="fas fa-search"></i> Verificar</button>
 
-      <!-- Opciones si no existe -->
-      <div id="opciones-student" class="hidden" style="margin-top: 20px;">
-        <button id="crear-ficha-btn">Crear ficha con nuevo registro</button>
-      </div>
+      <div id="resultado-verificacion"></div>
 
-      <!-- Opciones si existe -->
-      <div id="acciones-existente" class="hidden" style="margin-top: 20px;">
-        <p><strong>¿Qué quieres hacer?</strong></p>
-        <div class="actions">
-          <button id="editar-info-btn">Editar información</button>
-          <button id="agregar-ficha-btn">Agregar ficha</button>
-        </div>
-      </div>
-
-      <!-- Formulario Nuevo Estudiante -->
-      <div id="nuevo-estudiante-form" class="hidden">
-        <h3 style="color: #1a56db;">Datos del Estudiante</h3>
+      <!-- Formulario Crear Estudiante -->
+      <div id="crear-estudiante-form" class="hidden">
+        <h3 style="color: #1a56db; margin-top: 20px;">Registrar Nuevo Estudiante</h3>
         <div class="form-group">
-          <label for="nombre">Nombre:</label>
-          <input type="text" id="nombre" required />
+          <label for="centro-escolar">Nombre del Centro Escolar:</label>
+          <input type="text" id="centro-escolar" required />
+        </div>
+        <div class="form-group">
+          <label for="nombre-estudiante">Nombre del Estudiante:</label>
+          <input type="text" id="nombre-estudiante" required />
         </div>
         <div class="form-group">
           <label for="grado">Grado:</label>
           <select id="grado" required>
             <option value="">Seleccionar grado</option>
+            <option value="Parvularia 4">Parvularia 4</option>
+            <option value="Parvularia 5">Parvularia 5</option>
+            <option value="Parvularia 6">Parvularia 6</option>
             <option value="1ro">1ro</option>
             <option value="2do">2do</option>
             <option value="3ro">3ro</option>
             <option value="4to">4to</option>
             <option value="5to">5to</option>
             <option value="6to">6to</option>
+            <option value="7mo">7mo</option>
+            <option value="8vo">8vo</option>
+            <option value="9no">9no</option>
           </select>
         </div>
         <div class="form-group">
-          <label for="docente">Docente:</label>
-          <input type="text" id="docente" required />
-        </div>
-        <div class="form-group">
-          <label for="responsable">Responsable:</label>
+          <label for="responsable">Nombre del Responsable:</label>
           <input type="text" id="responsable" required />
         </div>
         <div class="form-group">
-          <label for="padre">Nombre del Padre:</label>
-          <input type="text" id="padre" required />
-        </div>
-        <div class="form-group">
-          <label for="madre">Nombre de la Madre:</label>
-          <input type="text" id="madre" required />
+          <label for="docente">Docente Responsable:</label>
+          <input type="text" id="docente" required />
         </div>
         <div class="actions">
-          <button id="finalizar-registro-btn">Finalizar Registro</button>
-          <button id="cancelar-registro-btn" class="btn-secondary">Cancelar</button>
+          <button id="guardar-estudiante-btn">Guardar</button>
+          <button id="cancelar-estudiante-btn" class="btn-secondary">Cancelar</button>
         </div>
       </div>
 
-      <!-- Formulario Agregar Ficha -->
-      <div id="agregar-ficha-form" class="hidden">
-        <h3 style="color: #1a56db;">Agregar Ficha</h3>
+      <!-- Formulario Ficha Escolar -->
+      <div id="ficha-form" class="hidden">
+        <h3 style="color: #1a56db; margin-top: 20px;">Registrar Ficha Escolar</h3>
         <div class="form-group">
-          <label for="fecha">Fecha:</label>
-          <input type="date" id="fecha" required />
+          <label for="ficha-centro">Centro Escolar:</label>
+          <input type="text" id="ficha-centro" readonly />
         </div>
         <div class="form-group">
-          <label for="hora">Hora:</label>
-          <input type="time" id="hora" required />
+          <label for="ficha-nombre">Nombre del Estudiante:</label>
+          <input type="text" id="ficha-nombre" readonly />
         </div>
         <div class="form-group">
-          <label>Tipo de Falta:</label>
-          <div class="radio-group">
-            <label><input type="radio" name="tipo-falta" value="Académica"> Académica</label>
-            <label><input type="radio" name="tipo-falta" value="Conducta"> Conducta</label>
-            <label><input type="radio" name="tipo-falta" value="Puntualidad"> Puntualidad</label>
-            <label><input type="radio" name="tipo-falta" value="Otra"> Otra:</label>
-            <input type="text" id="otra-falta" placeholder="Especificar" style="width: 150px;" />
-          </div>
+          <label for="ficha-nie">NIE:</label>
+          <input type="text" id="ficha-nie" readonly />
         </div>
         <div class="form-group">
-          <label for="descripcion">Descripción de la Falta:</label>
-          <textarea id="descripcion" rows="3" required></textarea>
+          <label for="ficha-grado">Grado:</label>
+          <input type="text" id="ficha-grado" readonly />
         </div>
         <div class="form-group">
-          <label for="accion">Acción tomada:</label>
-          <textarea id="accion" rows="2" required></textarea>
+          <label for="ficha-fecha">Fecha:</label>
+          <input type="date" id="ficha-fecha" required />
+        </div>
+        <div class="form-group">
+          <label for="ficha-hora">Hora:</label>
+          <input type="time" id="ficha-hora" required />
+        </div>
+        <div class="form-group">
+          <label for="ficha-tipo">Tipo de Falta:</label>
+          <select id="ficha-tipo" required>
+            <option value="">Seleccionar</option>
+            <option value="Académica">Académica</option>
+            <option value="Conductual">Conductual</option>
+            <option value="Puntualidad">Puntualidad</option>
+            <option value="Otra">Otra</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="ficha-descripcion">Descripción de la Falta:</label>
+          <textarea id="ficha-descripcion" rows="3" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="ficha-accion">Acción Tomada:</label>
+          <textarea id="ficha-accion" rows="2" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="ficha-responsable">Responsable:</label>
+          <input type="text" id="ficha-responsable" readonly />
+        </div>
+        <div class="form-group">
+          <label for="ficha-docente">Docente Responsable:</label>
+          <input type="text" id="ficha-docente" readonly />
         </div>
         <div class="actions">
-          <button id="finalizar-ficha-btn">Registrar Ficha</button>
+          <button id="finalizar-ficha-btn">Finalizar</button>
           <button id="cancelar-ficha-btn" class="btn-secondary">Cancelar</button>
         </div>
       </div>
 
-      <!-- Botón Descargar Ficha -->
-      <div id="descargar-ficha-btn-container" class="hidden" style="margin-top: 20px;">
-        <button id="descargar-ficha-btn"><i class="fas fa-download"></i> Descargar Ficha</button>
+      <!-- Botones finales -->
+      <div id="botones-finales" class="hidden" style="margin-top: 20px;">
+        <div class="actions">
+          <button id="descargar-pdf-btn"><i class="fas fa-download"></i> Descargar PDF</button>
+          <button id="nueva-ficha-btn" class="btn-secondary">Nueva Ficha</button>
+        </div>
       </div>
     </div>
 
     <!-- Sección Consolidado -->
     <div id="consolidado-section" class="section">
-      <h2 style="color: #1a56db;">Consolidado de Fichas</h2>
+      <h2 style="color: #1a56db;">Consolidado de Estudiantes</h2>
       <div id="lista-estudiantes">
         <p>Cargando estudiantes...</p>
       </div>
     </div>
   </div>
 
-  <!-- Incluir Firebase -->
+  <!-- Firebase -->
   <script type="module">
+    // Importar Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-    import { getFirestore, collection, doc, getDoc, getDocs, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+    import { getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBbSKiGM7QDIRFuGJlE1vQr-CLRUr4jj1g",
@@ -392,20 +370,18 @@
 
     const nieInput = document.getElementById("nie");
     const verificarBtn = document.getElementById("verificar-btn");
-    const opcionesStudent = document.getElementById("opciones-student");
-    const accionesExistente = document.getElementById("acciones-existente");
-    const nuevoEstudianteForm = document.getElementById("nuevo-estudiante-form");
-    const agregarFichaForm = document.getElementById("agregar-ficha-form");
-    const descargarFichaBtnContainer = document.getElementById("descargar-ficha-btn-container");
+    const resultadoDiv = document.getElementById("resultado-verificacion");
 
-    const crearFichaBtn = document.getElementById("crear-ficha-btn");
-    const editarInfoBtn = document.getElementById("editar-info-btn");
-    const agregarFichaBtn = document.getElementById("agregar-ficha-btn");
-    const finalizarRegistroBtn = document.getElementById("finalizar-registro-btn");
-    const cancelarRegistroBtn = document.getElementById("cancelar-registro-btn");
+    const crearEstudianteForm = document.getElementById("crear-estudiante-form");
+    const fichaForm = document.getElementById("ficha-form");
+    const botonesFinales = document.getElementById("botones-finales");
+
+    const guardarEstudianteBtn = document.getElementById("guardar-estudiante-btn");
+    const cancelarEstudianteBtn = document.getElementById("cancelar-estudiante-btn");
     const finalizarFichaBtn = document.getElementById("finalizar-ficha-btn");
     const cancelarFichaBtn = document.getElementById("cancelar-ficha-btn");
-    const descargarFichaBtn = document.getElementById("descargar-ficha-btn");
+    const descargarPdfBtn = document.getElementById("descargar-pdf-btn");
+    const nuevaFichaBtn = document.getElementById("nueva-ficha-btn");
 
     // Variables globales
     let currentStudent = null;
@@ -431,139 +407,161 @@
       const nie = nieInput.value.trim();
       if (!nie) return alert("Por favor ingrese un NIE.");
 
+      resultadoDiv.innerHTML = "";
+      crearEstudianteForm.classList.add("hidden");
+      fichaForm.classList.add("hidden");
+      botonesFinales.classList.add("hidden");
+
       const studentRef = doc(db, "students", nie);
       const studentSnap = await getDoc(studentRef);
 
-      resetForms();
-
       if (studentSnap.exists()) {
         currentStudent = { ...studentSnap.data(), id: nie };
-        accionesExistente.classList.remove("hidden");
-        opcionesStudent.classList.add("hidden");
+        mostrarOpcionesExistentes(nie);
       } else {
-        currentStudent = null;
-        opcionesStudent.classList.remove("hidden");
-        accionesExistente.classList.add("hidden");
+        resultadoDiv.innerHTML = '<div class="alert">No existe un estudiante registrado con ese NIE.</div>';
+        crearEstudianteForm.classList.remove("hidden");
       }
     });
 
-    // Mostrar formularios
-    crearFichaBtn.addEventListener("click", () => {
-      nuevoEstudianteForm.classList.remove("hidden");
-    });
+    // Mostrar opciones si existe
+    function mostrarOpcionesExistentes(nie) {
+      resultadoDiv.innerHTML = `
+        <p><strong>¿Qué deseas hacer?</strong></p>
+        <div class="actions">
+          <button id="btn-ficha-existente">Ficha Escolar</button>
+          <button id="btn-editar-estudiante" class="btn-secondary">Editar</button>
+        </div>
+      `;
+      document.getElementById("btn-ficha-existente").addEventListener("click", () => abrirFichaForm());
+      document.getElementById("btn-editar-estudiante").addEventListener("click", () => editarEstudiante());
+    }
 
-    agregarFichaBtn.addEventListener("click", () => {
-      agregarFichaForm.classList.remove("hidden");
-      document.getElementById("fecha").value = new Date().toISOString().split('T')[0];
-      document.getElementById("hora").value = new Date().toTimeString().slice(0, 5);
-    });
+    // Abrir formulario de ficha
+    function abrirFichaForm() {
+      const data = currentStudent;
+      document.getElementById("ficha-centro").value = data.centroEscolar || "";
+      document.getElementById("ficha-nombre").value = data.nombre;
+      document.getElementById("ficha-nie").value = data.nie;
+      document.getElementById("ficha-grado").value = data.grado;
+      document.getElementById("ficha-responsable").value = data.responsable;
+      document.getElementById("ficha-docente").value = data.docente;
 
-    // Finalizar nuevo registro
-    finalizarRegistroBtn.addEventListener("click", () => {
-      confirmModal.classList.remove("hidden");
-    });
+      document.getElementById("ficha-fecha").value = new Date().toISOString().split('T')[0];
+      document.getElementById("ficha-hora").value = new Date().toTimeString().slice(0, 5);
 
-    confirmYesBtn.addEventListener("click", async () => {
+      fichaForm.classList.remove("hidden");
+    }
+
+    // Editar estudiante
+    function editarEstudiante() {
+      const data = currentStudent;
+      document.getElementById("centro-escolar").value = data.centroEscolar || "";
+      document.getElementById("nombre-estudiante").value = data.nombre;
+      document.getElementById("grado").value = data.grado;
+      document.getElementById("responsable").value = data.responsable;
+      document.getElementById("docente").value = data.docente;
+
+      crearEstudianteForm.classList.remove("hidden");
+      resultadoDiv.innerHTML = '<p><strong>Editando información del estudiante.</strong></p>';
+    }
+
+    // Guardar nuevo estudiante
+    guardarEstudianteBtn.addEventListener("click", async () => {
       const nie = nieInput.value.trim();
-      const nombre = document.getElementById("nombre").value;
+      const centro = document.getElementById("centro-escolar").value;
+      const nombre = document.getElementById("nombre-estudiante").value;
       const grado = document.getElementById("grado").value;
-      const docente = document.getElementById("docente").value;
       const responsable = document.getElementById("responsable").value;
-      const padre = document.getElementById("padre").value;
-      const madre = document.getElementById("madre").value;
+      const docente = document.getElementById("docente").value;
 
-      if (!nombre || !grado || !docente || !responsable || !padre || !madre) {
+      if (!nombre || !grado || !responsable || !docente) {
         alert("Por favor complete todos los campos.");
         return;
       }
 
-      const studentData = { 
-        nombre, 
-        grado, 
-        docente, 
-        responsable, 
-        padre, 
-        madre, 
-        fichas: 1, 
-        nie 
+      const studentData = {
+        centroEscolar: centro,
+        nombre,
+        grado,
+        responsable,
+        docente,
+        nie,
+        fichas: 0
       };
 
-      await addDoc(collection(db, "students"), studentData);
+      await setDoc(doc(db, "students", nie), studentData);
+      currentStudent = studentData;
 
-      const fichaData = {
+      crearEstudianteForm.classList.add("hidden");
+      abrirFichaForm();
+    });
+
+    // Cancelar creación
+    cancelarEstudianteBtn.addEventListener("click", () => {
+      crearEstudianteForm.classList.add("hidden");
+      resultadoDiv.innerHTML = "";
+    });
+
+    // Finalizar ficha
+    finalizarFichaBtn.addEventListener("click", async () => {
+      const nie = document.getElementById("ficha-nie").value;
+      const data = {
+        centroEscolar: document.getElementById("ficha-centro").value,
+        nombre: document.getElementById("ficha-nombre").value,
         nie,
-        estudiante: nombre,
-        fecha: new Date().toISOString().split('T')[0],
-        hora: new Date().toTimeString().slice(0, 5),
-        tipoFalta: "Académica",
-        descripcion: "Primera falta registrada",
-        accion: "Notificación",
+        grado: document.getElementById("ficha-grado").value,
+        fecha: document.getElementById("ficha-fecha").value,
+        hora: document.getElementById("ficha-hora").value,
+        tipoFalta: document.getElementById("ficha-tipo").value,
+        descripcion: document.getElementById("ficha-descripcion").value,
+        accion: document.getElementById("ficha-accion").value,
+        responsable: document.getElementById("ficha-responsable").value,
+        docente: document.getElementById("ficha-docente").value,
         createdAt: new Date().toISOString()
       };
-      await addDoc(collection(db, "fichas"), fichaData);
 
-      alert("Estudiante y ficha registrados exitosamente.");
-      currentStudent = studentData;
-      confirmModal.classList.add("hidden");
-      showDownloadButton();
-    });
-
-    confirmNoBtn.addEventListener("click", () => {
-      confirmModal.classList.add("hidden");
-    });
-
-    // Finalizar ficha existente
-    finalizarFichaBtn.addEventListener("click", async () => {
-      const nie = nieInput.value.trim();
-      const fecha = document.getElementById("fecha").value;
-      const hora = document.getElementById("hora").value;
-      const tipoFalta = document.querySelector('input[name="tipo-falta"]:checked')?.value || "";
-      const otraFalta = document.getElementById("otra-falta").value;
-      const descripcion = document.getElementById("descripcion").value;
-      const accion = document.getElementById("accion").value;
-
-      if (!tipoFalta || !descripcion || !accion) {
-        alert("Por favor complete todos los campos.");
-        return;
-      }
-
-      const tipoFinal = otraFalta ? `${tipoFalta} (${otraFalta})` : tipoFalta;
-
-      const fichaData = { nie, estudiante: currentStudent.nombre, fecha, hora, tipoFalta: tipoFinal, descripcion, accion, createdAt: new Date().toISOString() };
-      await addDoc(collection(db, "fichas"), fichaData);
+      await addDoc(collection(db, "fichas"), data);
 
       const studentRef = doc(db, "students", nie);
       await updateDoc(studentRef, { fichas: currentStudent.fichas + 1 });
       currentStudent.fichas += 1;
 
-      alert("Ficha registrada exitosamente.");
-      showDownloadButton();
+      fichaForm.classList.add("hidden");
+      botonesFinales.classList.remove("hidden");
     });
 
-    // Cancelar formularios
-    cancelarRegistroBtn.addEventListener("click", resetForms);
-    cancelarFichaBtn.addEventListener("click", resetForms);
-
-    function resetForms() {
-      nuevoEstudianteForm.classList.add("hidden");
-      agregarFichaForm.classList.add("hidden");
-      descargarFichaBtnContainer.classList.add("hidden");
-      accionesExistente.classList.add("hidden");
-      opcionesStudent.classList.add("hidden");
-    }
-
-    function showDownloadButton() {
-      descargarFichaBtnContainer.classList.remove("hidden");
-    }
+    cancelarFichaBtn.addEventListener("click", () => {
+      fichaForm.classList.add("hidden");
+    });
 
     // Descargar PDF
-    descargarFichaBtn.addEventListener("click", () => {
-      generatePDF(currentStudent);
+    descargarPdfBtn.addEventListener("click", () => {
+      generatePDF({
+        centro: document.getElementById("ficha-centro").value,
+        nombre: document.getElementById("ficha-nombre").value,
+        nie: document.getElementById("ficha-nie").value,
+        grado: document.getElementById("ficha-grado").value,
+        fecha: document.getElementById("ficha-fecha").value,
+        hora: document.getElementById("ficha-hora").value,
+        tipo: document.getElementById("ficha-tipo").value,
+        descripcion: document.getElementById("ficha-descripcion").value,
+        accion: document.getElementById("ficha-accion").value,
+        responsable: document.getElementById("ficha-responsable").value,
+        docente: document.getElementById("ficha-docente").value,
+        fichas: currentStudent.fichas + 1
+      });
     });
 
-    function generatePDF(student) {
+    // Nueva ficha
+    nuevaFichaBtn.addEventListener("click", () => {
+      location.reload();
+    });
+
+    // Generar PDF (horizontal)
+    function generatePDF(data) {
       const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ orientation: 'landscape' }); // Horizontal
+      const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
 
       doc.setFontSize(16);
       doc.text("FICHA ESCOLAR", 10, 20);
@@ -571,122 +569,121 @@
       doc.text("CENTRO ESCOLAR CANTÓN LOS PRADOS", 10, 30);
 
       const y = 40;
-      doc.text(`Nombre del Estudiante: ${student.nombre}`, 10, y);
-      doc.text(`Grado: ${student.grado}`, 100, y);
-      doc.text(`NIE: ${student.nie}`, 10, y + 10);
-      doc.text(`Número de Fichas Acumuladas: ${student.fichas}`, 10, y + 20);
-      doc.text(`Padre: ${student.padre}`, 10, y + 30);
-      doc.text(`Madre: ${student.madre}`, 10, y + 40);
+      doc.text(`Nombre del Estudiante: ${data.nombre}`, 10, y);
+      doc.text(`Centro Escolar: ${data.centro}`, 100, y);
+      doc.text(`NIE: ${data.nie}`, 10, y + 10);
+      doc.text(`Grado: ${data.grado}`, 100, y + 10);
+      doc.text(`Fecha: ${data.fecha} Hora: ${data.hora}`, 10, y + 20);
+      doc.text(`Tipo de Falta: ${data.tipo}`, 10, y + 30);
+      doc.text(`Descripción: ${data.descripcion}`, 10, y + 40);
+      doc.text(`Acción tomada: ${data.accion}`, 10, y + 50);
+      doc.text(`Fichas acumuladas: ${data.fichas}`, 10, y + 60);
 
-      doc.text(`Fecha: ___________________ Hora: ___________________`, 10, y + 55);
-      doc.text(`Tipo de Falta Cometida:`, 10, y + 70);
-      doc.text(`___ Académica ___ Conducta ___ Puntualidad ___ Otra: ________________`, 10, y + 80);
-      doc.text(`Descripción de la Falta:`, 10, y + 95);
-      doc.text(`_______________________________________________________`, 10, y + 105);
-      doc.text(`Acción tomada: _____________________________________________`, 10, y + 120);
+      doc.text("Firma del Estudiante: _______________________", 10, y + 80);
+      doc.text("Firma del Responsable: ______________________", 10, y + 95);
+      doc.text("Firma del Docente: __________________________", 100, y + 95);
 
-      doc.text(`Firma del Estudiante: __________________________`, 10, y + 135);
-      doc.text(`Firma del Responsable: _________________________`, 10, y + 150);
-      doc.text(`Firma del Docente: _____________________________`, 100, y + 150);
-
-      doc.save(`ficha_${student.nombre.replace(/\s+/g, '_')}.pdf`);
+      doc.save(`ficha_${data.nombre.replace(/\s+/g, '_')}_${data.fecha}.pdf`);
     }
 
     // Cargar Consolidado
     async function loadConsolidado() {
-      const estudiantesDiv = document.getElementById("lista-estudiantes");
-      estudiantesDiv.innerHTML = "<p>Cargando estudiantes...</p>";
+      const div = document.getElementById("lista-estudiantes");
+      div.innerHTML = "<p>Cargando estudiantes...</p>";
 
       try {
         const querySnapshot = await getDocs(collection(db, "students"));
         const estudiantes = [];
-
-        querySnapshot.forEach((doc) => {
-          estudiantes.push({ ...doc.data(), id: doc.id });
+        querySnapshot.forEach(doc => {
+          estudiantes.push({ id: doc.id, ...doc.data() });
         });
 
-        estudiantes.sort((a, b) => a.nombre.localeCompare(b.nombre));
-
+        div.innerHTML = "";
         if (estudiantes.length === 0) {
-          estudiantesDiv.innerHTML = "<p>No hay estudiantes registrados.</p>";
+          div.innerHTML = "<p>No hay estudiantes registrados.</p>";
           return;
         }
 
-        estudiantesDiv.innerHTML = "";
-        estudiantes.forEach(estudiante => {
+        estudiantes.sort((a, b) => a.nombre.localeCompare(b.nombre));
+
+        estudiantes.forEach(est => {
           const card = document.createElement("div");
           card.className = "card";
-          card.innerHTML = `
-            <strong>${estudiante.nombre}</strong> 
-            <span style="float:right;">Fichas: ${estudiante.fichas || 0}</span>
-          `;
+          card.innerHTML = `<strong>${est.nombre}</strong> - Fichas: ${est.fichas || 0}`;
           card.style.cursor = "pointer";
-          card.onclick = () => toggleFichas(estudiante);
-          estudiantesDiv.appendChild(card);
+          card.onclick = () => toggleFichas(est.id);
+          div.appendChild(card);
         });
       } catch (error) {
-        estudiantesDiv.innerHTML = "<p>Error al cargar estudiantes.</p>";
+        div.innerHTML = `<p>Error: ${error.message}</p>`;
       }
     }
 
-    function toggleFichas(estudiante) {
+    // Toggle fichas
+    async function toggleFichas(nie) {
       const card = event.target.closest(".card");
       const dropdown = card.querySelector(".ficha-dropdown");
       if (dropdown) {
-        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
-      } else {
-        const fichasBody = document.createElement("div");
-        fichasBody.className = "ficha-dropdown";
-        fichasBody.style.display = "block";
-        card.appendChild(fichasBody);
+        dropdown.remove();
+        return;
+      }
 
-        getDocs(collection(db, "fichas").where("nie", "==", estudiante.id))
-          .then(snapshot => {
-            if (snapshot.empty) {
-              fichasBody.innerHTML = "<p>No hay fichas registradas.</p>";
-            } else {
-              snapshot.forEach(doc => {
-                const f = doc.data();
-                const item = document.createElement("div");
-                item.className = "ficha-item";
-                item.innerHTML = `
-                  <strong>Fecha:</strong> ${f.fecha} <strong>Hora:</strong> ${f.hora}<br>
-                  <strong>Tipo:</strong> ${f.tipoFalta}<br>
-                  <strong>Acción:</strong> ${f.accion}<br>
-                  <button class="btn-pdf" onclick="generatePDFFromConsolidado(${JSON.stringify({...f, nombre: estudiante.nombre, fichas: estudiante.fichas}).replace(/"/g, '&quot;')})">PDF</button>
-                `;
-                fichasBody.appendChild(item);
-              });
-            }
-          });
+      const container = document.createElement("div");
+      container.className = "ficha-dropdown";
+      card.appendChild(container);
+
+      try {
+        const querySnapshot = await getDocs(collection(db, "fichas").where("nie", "==", nie));
+        if (querySnapshot.empty) {
+          container.innerHTML = "<p>No tiene fichas registradas.</p>";
+          return;
+        }
+
+        querySnapshot.forEach(doc => {
+          const f = doc.data();
+          const item = document.createElement("div");
+          item.className = "ficha-item";
+          item.innerHTML = `
+            <p><strong>Fecha:</strong> ${f.fecha} | <strong>Hora:</strong> ${f.hora}</p>
+            <p><strong>Tipo:</strong> ${f.tipoFalta}</p>
+            <p><strong>Descripción:</strong> ${f.descripcion}</p>
+            <p><strong>Acción:</strong> ${f.accion}</p>
+            <div class="actions">
+              <button class="btn-pdf" onclick="generatePDFFromConsolidado(${JSON.stringify(f).replace(/"/g, '&quot;')})">Descargar PDF</button>
+              <button class="btn-danger" onclick="eliminarFicha('${doc.id}')">Eliminar</button>
+            </div>
+          `;
+          container.appendChild(item);
+        });
+      } catch (error) {
+        container.innerHTML = `<p>Error: ${error.message}</p>`;
       }
     }
 
+    // Funciones globales
     window.generatePDFFromConsolidado = function(fichaData) {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ orientation: 'landscape' });
+      generatePDF({
+        centro: fichaData.centroEscolar || "No especificado",
+        nombre: fichaData.nombre,
+        nie: fichaData.nie,
+        grado: fichaData.grado,
+        fecha: fichaData.fecha,
+        hora: fichaData.hora,
+        tipo: fichaData.tipoFalta,
+        descripcion: fichaData.descripcion,
+        accion: fichaData.accion,
+        responsable: fichaData.responsable,
+        docente: fichaData.docente,
+        fichas: 1 // Temporal
+      });
+    };
 
-      doc.setFontSize(16);
-      doc.text("FICHA ESCOLAR", 10, 20);
-      doc.setFontSize(12);
-      doc.text("CENTRO ESCOLAR CANTÓN LOS PRADOS", 10, 30);
-
-      const y = 40;
-      doc.text(`Nombre del Estudiante: ${fichaData.nombre}`, 10, y);
-      doc.text(`Grado: ___________`, 100, y);
-      doc.text(`NIE: ${fichaData.nie || '___________'}`, 10, y + 10);
-      doc.text(`Número de Fichas Acumuladas: ${fichaData.fichas}`, 10, y + 20);
-
-      doc.text(`Fecha: ${fichaData.fecha} Hora: ${fichaData.hora}`, 10, y + 35);
-      doc.text(`Tipo de Falta: ${fichaData.tipoFalta}`, 10, y + 50);
-      doc.text(`Descripción: ${fichaData.descripcion}`, 10, y + 65);
-      doc.text(`Acción tomada: ${fichaData.accion}`, 10, y + 80);
-
-      doc.text(`Firma del Estudiante: __________________________`, 10, y + 100);
-      doc.text(`Firma del Responsable: _________________________`, 10, y + 115);
-      doc.text(`Firma del Docente: _____________________________`, 100, y + 115);
-
-      doc.save(`ficha_${fichaData.nombre.replace(/\s+/g, '_')}_${fichaData.fecha}.pdf`);
+    window.eliminarFicha = async function(id) {
+      if (confirm("¿Seguro que deseas eliminar esta ficha?")) {
+        await deleteDoc(doc(db, "fichas", id));
+        alert("Ficha eliminada.");
+        location.reload();
+      }
     };
 
     // Cargar jsPDF
